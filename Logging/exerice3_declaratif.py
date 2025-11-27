@@ -1,5 +1,7 @@
 import logging
+from logging.config import dictConfig
 import random
+import os, yaml
 
 class SensitiveFilter(logging.Filter):
     def filter(self, record):
@@ -7,23 +9,16 @@ class SensitiveFilter(logging.Filter):
         record.msg = msg.replace('User', "****")
         return True
 
+level_log_file = os.getenv("LOG")
+if level_log_file is None:
+    level_log_file = "config_develop.yaml"
+
+with open(os.path.join(os.path.dirname(__file__), level_log_file)) as f:
+    config = yaml.safe_load(f.read())
+    dictConfig(config)
+
 livres_logger = logging.getLogger('livres')
 transactions_logger = logging.getLogger('transactions')
-
-livres_logger.setLevel(logging.DEBUG)
-transactions_logger.setLevel(logging.WARNING)
-
-livres_handler = logging.StreamHandler()
-livres_formatter = logging.Formatter("%(asctime)s - %(module)s - %(funcName)s - %(levelname)s - %(message)s", datefmt="%d/%Y %I/%M %p")
-livres_handler.setFormatter(livres_formatter)
-livres_handler.addFilter(SensitiveFilter())
-livres_logger.addHandler(livres_handler)
-
-transactions_handler = logging.StreamHandler()
-transactions_formatter = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
-transactions_handler.setFormatter(transactions_formatter)
-transactions_handler.addFilter(SensitiveFilter())
-transactions_logger.addHandler(transactions_handler)
 
 bibliotheque = {}
 
