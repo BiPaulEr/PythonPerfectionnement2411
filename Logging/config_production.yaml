@@ -1,0 +1,30 @@
+version: 1
+formatters:
+  livres_formatter:
+    format: "%(asctime)s - %(module)s - %(funcName)s - %(levelname)s - %(message)s"
+    datefmt: "%d/%Y %I/%M %p"
+  transactions_formatter:
+    format: "%(name)s - %(levelname)s - %(message)s"
+filters:
+  sensitive_filter:
+    (): __main__.SensitiveFilter
+handlers:
+  livres_handler:
+    class: logging.StreamHandler
+    formatter: livres_formatter
+    stream: ext://sys.stdout
+    filters: [sensitive_filter]
+  transactions_handler:
+    class: logging.StreamHandler
+    formatter: transactions_formatter
+    stream: ext://sys.stdout
+    filters: [sensitive_filter]
+loggers:
+  transactions:
+    level: WARNING
+    handlers: [transactions_handler]
+  livres:
+    level: WARNING
+    handlers: [livres_handler]
+
+
